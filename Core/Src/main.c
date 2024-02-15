@@ -109,7 +109,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -272,6 +271,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	  HAL_UART_Receive_DMA(&huart1, UART_DataRX, USART_BUFFER_LEN);
 	  HAL_UART_Transmit_DMA(&huart2, UART_DataRX, USART_BUFFER_LEN);
   }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+	if (huart->Instance == USART1)
+	{
+		if(huart->ErrorCode == HAL_UART_ERROR_FE || huart->ErrorCode == HAL_UART_ERROR_ORE || huart->ErrorCode == HAL_UART_ERROR_NE)
+		{
+			UART_DataRX[huart->RxXferCount] = 0x20;
+			HAL_UART_Transmit_DMA(&huart2, UART_DataRX, huart->RxXferCount + 1);
+		}
+	}
 }
 
 /* USER CODE END 4 */

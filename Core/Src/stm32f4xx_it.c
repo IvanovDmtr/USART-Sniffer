@@ -225,10 +225,7 @@ void USART1_IRQHandler(void)
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
-  if(huart1.ErrorCode == HAL_UART_ERROR_FE)
-  {
 
-  }
   /* USER CODE END USART1_IRQn 1 */
 }
 
