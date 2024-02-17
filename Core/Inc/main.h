@@ -58,7 +58,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN Private defines */
-#define USART_BUFFER_LEN		256
+#define USART_BUFFER_LEN		7
 extern uint16_t ByteCounter;
 extern uint8_t UART_DataRX[USART_BUFFER_LEN];
 /* USER CODE END Private defines */
