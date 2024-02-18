@@ -43,7 +43,6 @@
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart1_rx;
-DMA_HandleTypeDef hdma_usart1_tx;
 DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
@@ -138,8 +137,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;//4
-  RCC_OscInitStruct.PLL.PLLN = 192;//96
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 192;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -245,9 +244,6 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
-  /* DMA2_Stream7_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 
 }
 
@@ -266,20 +262,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DubugPin_GPIO_Port, DubugPin_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : DubugPin_Pin */
-  GPIO_InitStruct.Pin = DubugPin_Pin;
+  /*Configure GPIO pin : Debug_Pin */
+  GPIO_InitStruct.Pin = Debug_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(DubugPin_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(Debug_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : EOP_Pin */
-  GPIO_InitStruct.Pin = EOP_Pin;
+  /*Configure GPIO pin : USB_EOP_Pin */
+  GPIO_InitStruct.Pin = USB_EOP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(EOP_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(USB_EOP_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
@@ -297,6 +293,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		UART_DataRX[huart1.hdmarx->Instance->NDTR] = 0x20;
 		HAL_UART_Transmit_DMA(&huart2, UART_DataRX, huart1.hdmarx->Instance->NDTR + 1);
+
+		if(UART_DataRX[0] == 0x95 && UART_DataRX[1] == 0x83)
+		{
+			HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_RESET);
+		}
 		SkipEOP = true;
 	}
 	else
