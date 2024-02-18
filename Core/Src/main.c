@@ -138,8 +138,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;//4
-  RCC_OscInitStruct.PLL.PLLN = 192;//96
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 192;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -274,29 +274,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DubugPin_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : EOP_Pin */
-  //GPIO_InitStruct.Pin = EOP_Pin;
-  //GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  //GPIO_InitStruct.Pull = GPIO_NOPULL;
-  //HAL_GPIO_Init(EOP_GPIO_Port, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  //HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
- // HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-
 }
 
 /* USER CODE BEGIN 4 */
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if (huart->Instance == USART1)
-  {
-	  HAL_UART_Receive_DMA(&huart1, UART_DataRX, USART_BUFFER_LEN);
-	  HAL_UART_Transmit_DMA(&huart2, UART_DataRX, USART_BUFFER_LEN);
-  }
-}
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
@@ -309,20 +289,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 			HAL_UART_Receive_DMA(&huart1, UART_DataRX, USART_BUFFER_LEN);
 		}
 	}
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	//static bool SkipEOP = false;
-
-	//if(!SkipEOP)
-	//{
-		//UART_DataRX[huart1.hdmarx->Instance->NDTR] = 0x20;
-		//HAL_UART_Transmit_DMA(&huart2, UART_DataRX, huart1.hdmarx->Instance->NDTR + 1);
-		//SkipEOP = true;
-	//}
-	//else
-		//SkipEOP = false;
 }
 
 /* USER CODE END 4 */

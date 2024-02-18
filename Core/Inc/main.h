@@ -59,9 +59,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define DubugPin_Pin GPIO_PIN_1
 #define DubugPin_GPIO_Port GPIOA
-#define EOP_Pin GPIO_PIN_6
-#define EOP_GPIO_Port GPIOB
-#define EOP_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 #define USART_BUFFER_LEN		7
 extern uint16_t ByteCounter;
