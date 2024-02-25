@@ -46,7 +46,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+void Delay_us(uint32_t Delay);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -204,13 +204,41 @@ void SysTick_Handler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+	volatile static uint8_t UART_Data[2];
 
+	USART1->CR1 |= USART_CR1_RE;
+	while(!(USART1->SR & USART_SR_RXNE)){}
+	UART_Data[0] += USART1->DR;
+	//while(!(USART1->SR & 0x2C)){}
+	//UART_Data[1] = USART1->DR;
+
+	Debug_GPIO_Port->BSRR |= Debug_Pin;
+	Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
+
+	USART1->CR1 &=~ USART_CR1_RE;
+	//NVIC_DisableIRQ(EXTI9_5_IRQn);
+
+	//Delay_us(10);
+
+	//Debug_GPIO_Port->BSRR |= Debug_Pin;
+	//Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
+	//NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+	__HAL_GPIO_EXTI_CLEAR_IT(USB_EOP_Pin);
   /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(USB_EOP_Pin);
+  //HAL_GPIO_EXTI_IRQHandler(USB_EOP_Pin);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
+#define DELAY_K			5	//MHz
+
+void Delay_us(uint32_t Delay)
+{
+	uint64_t Temp = (uint64_t)((float)Delay * DELAY_K);
+
+	while(Temp){Temp--;}
+}
 /* USER CODE END 1 */
