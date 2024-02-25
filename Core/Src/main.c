@@ -238,14 +238,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, Debug_Pin|Debug2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : Debug_Pin */
-  GPIO_InitStruct.Pin = Debug_Pin;
+  /*Configure GPIO pins : Debug_Pin Debug2_Pin */
+  GPIO_InitStruct.Pin = Debug_Pin|Debug2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Debug_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : USB_EOP_Pin */
   GPIO_InitStruct.Pin = USB_EOP_Pin;
@@ -263,26 +263,23 @@ static void MX_GPIO_Init(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	static bool SkipEOP = false;
+	HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(Debug2_GPIO_Port, Debug2_Pin, GPIO_PIN_SET);
 
 	HAL_UART_DMAStop(&huart1);
 
-	if(!SkipEOP)
-	{
-		UART_DataRX[huart1.hdmarx->Instance->NDTR] = 0x20;
-		HAL_UART_Transmit_DMA(&huart2, UART_DataRX, huart1.hdmarx->Instance->NDTR + 1);
-
-		if(UART_DataRX[0] == 0x95 && UART_DataRX[1] == 0x83)
-		{
-			HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_RESET);
-		}
-		SkipEOP = true;
-	}
-	else
-		SkipEOP = false;
+	if(UART_DataRX[0] == 0x95 && UART_DataRX[1] == 0x83)
+		HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_RESET);
 
 	HAL_UART_Receive_DMA(&huart1, UART_DataRX, USART_BUFFER_LEN);
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->ErrorCode == HAL_UART_ERROR_FE || huart->ErrorCode == HAL_UART_ERROR_ORE || huart->ErrorCode == HAL_UART_ERROR_NE)
+	{
+		HAL_GPIO_WritePin(Debug2_GPIO_Port, Debug2_Pin, GPIO_PIN_RESET);
+	}
 }
 
 /* USER CODE END 4 */
