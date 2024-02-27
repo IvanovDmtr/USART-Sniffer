@@ -1,6 +1,6 @@
 #MicroXplorer Configuration settings - do not modify
 File.Version=6
-GPIO.groupedBy=
+GPIO.groupedBy=Group By Peripherals
 KeepUserPlacement=false
 Mcu.CPN=STM32F411CEU6
 Mcu.Family=STM32F4
@@ -129,7 +129,8 @@ RCC.VcooutputI2S=150000000
 SH.GPXTI5.0=GPIO_EXTI5
 SH.GPXTI5.ConfNb=1
 USART1.BaudRate=12000000
-USART1.IPParameters=VirtualMode,OverSampling,BaudRate
+USART1.IPParameters=VirtualMode,OverSampling,BaudRate,Mode
+USART1.Mode=MODE_RX
 USART1.OverSampling=UART_OVERSAMPLING_8
 USART1.VirtualMode=VM_ASYNC
 USART2.IPParameters=VirtualMode

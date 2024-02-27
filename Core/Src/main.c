@@ -133,8 +133,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 96;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -185,7 +185,7 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-  USART1->CR1 &=~ USART_CR1_RE;
+
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -238,7 +238,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Debug_Pin|Debug2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, Debug_Pin|Debug2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : Debug_Pin Debug2_Pin */
   GPIO_InitStruct.Pin = Debug_Pin|Debug2_Pin;
