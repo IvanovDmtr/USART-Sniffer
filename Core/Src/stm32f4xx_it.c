@@ -55,7 +55,7 @@ void Delay_us(uint32_t Delay);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -185,7 +185,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
-  //HAL_IncTick();
+  HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -199,27 +199,34 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles EXTI line[9:5] interrupts.
+  * @brief This function handles USART1 global interrupt.
   */
-void EXTI9_5_IRQHandler(void)
+void USART1_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+  /* USER CODE BEGIN USART1_IRQn 0 */
 	volatile static uint8_t UART_Data[2];
+
+	Debug2_GPIO_Port->BSRR |= Debug2_Pin;
+
+	__HAL_UART_DISABLE_IT(&huart1, UART_IT_RXNE);
 
 	while(!(USART1->SR & USART_SR_RXNE)){}
 	UART_Data[0] += USART1->DR;
+
 	while(!(USART1->SR & USART_SR_RXNE)){}
 	UART_Data[1] = USART1->DR;
 
 	Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
 	Debug_GPIO_Port->BSRR |= Debug_Pin;
 
-	__HAL_GPIO_EXTI_CLEAR_IT(USB_EOP_Pin);
-  /* USER CODE END EXTI9_5_IRQn 0 */
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+	Debug2_GPIO_Port->BSRR |= Debug2_Pin << 16;
 
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+  /* USER CODE END USART1_IRQn 0 */
+  //HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
 
-  /* USER CODE END EXTI9_5_IRQn 1 */
+  /* USER CODE END USART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
