@@ -257,7 +257,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Debug_GPIO_Port, Debug_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : Debug_Pin */
   GPIO_InitStruct.Pin = Debug_Pin;
@@ -275,6 +275,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
+	Debug_GPIO_Port->BSRR |= Debug_Pin;
+
+	HAL_UART_Receive_DMA(&huart1, Data, 2);
+}
 
 
 /* USER CODE END 4 */
