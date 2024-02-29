@@ -210,7 +210,7 @@ void USART1_IRQHandler(void)
 
 	__HAL_UART_DISABLE_IT(&huart1, UART_IT_RXNE);
 
-	UART_Data[0] += USART1->DR;
+	UART_Data[0] = USART1->DR;
 
 	Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
 	Debug_GPIO_Port->BSRR |= Debug_Pin;
@@ -218,8 +218,11 @@ void USART1_IRQHandler(void)
 	while(!(USART1->SR & USART_SR_RXNE)){}
 	UART_Data[1] = USART1->DR;
 
-	Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
-	Debug_GPIO_Port->BSRR |= Debug_Pin;
+	if(UART_Data[0] == 0x95 && UART_Data[1] == 0x83)
+	{
+		Debug_GPIO_Port->BSRR |= Debug_Pin << 16;
+		Debug_GPIO_Port->BSRR |= Debug_Pin;
+	}
 
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
